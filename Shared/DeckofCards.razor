@@ -1,0 +1,57 @@
+﻿@page "/deckofcards"
+
+<h1>Deck of Cards</h1>
+
+<button @onclick="ShuffleDeck">Shuffle Deck</button>
+
+@if (cards != null)
+{
+    <div>
+        @foreach (var card in cards)
+        {
+            <img src="@card.Image" alt="@card.Code" />
+        }
+    </div>
+}
+
+@code {
+    private List<Card>? cards;
+
+    private async Task ShuffleDeck()
+    {
+        var httpClient = new HttpClient();
+        var response = await httpClient.GetAsync("https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1");
+
+        if (response.IsSuccessStatusCode)
+        {
+            var deckInfo = await response.Content.ReadFromJsonAsync<DeckInfo>();
+
+            response = await httpClient.GetAsync($"https://deckofcardsapi.com/api/deck/{deckInfo?.deck_id}/draw/?count=5");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var drawResult = await response.Content.ReadFromJsonAsync<DrawResult>();
+                cards = drawResult?.Cards;
+            }
+        }
+    }
+
+    private class DeckInfo
+    {
+        public bool success {get; set;}
+        public string? deck_id { get; set; }
+        public int remining {get; set;}
+        public bool shuffled {get; set;}
+    }
+
+    private class DrawResult
+    {
+        public List<Card>? Cards { get; set; }
+    }
+
+    private class Card
+    {
+        public string? Code { get; set; }
+        public string? Image { get; set; }
+    }
+}
