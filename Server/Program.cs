@@ -28,13 +28,13 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
             });
 
             //builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://localhost:5053") });
-            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://astonishing-moxie-cc17b8.netlify.app/") });
+            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://astonishing-moxie-cc17b8.netlify.app") });
             builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
             builder.Services.AddScoped<CookieHandler>();
 
             /*builder.Services.AddHttpClient("ProjectBlazor.ServerAPI", client => client.BaseAddress = new Uri("http://localhost:5053"))
                .AddHttpMessageHandler<CookieHandler>();*/
-               builder.Services.AddHttpClient("ProjectBlazor.ServerAPI", client => client.BaseAddress = new Uri("https://astonishing-moxie-cc17b8.netlify.app/"))
+               builder.Services.AddHttpClient("ProjectBlazor.ServerAPI", client => client.BaseAddress = new Uri("https://astonishing-moxie-cc17b8.netlify.app"))
                .AddHttpMessageHandler<CookieHandler>();
 
 
