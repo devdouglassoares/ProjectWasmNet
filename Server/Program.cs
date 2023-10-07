@@ -5,6 +5,7 @@ using ProjectBlazor.Server.Data;
 using ProjectBlazor.Server.Models;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
