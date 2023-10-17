@@ -1,0 +1,39 @@
+@page "/create"
+
+@* @inject ITodoService TodoService  *@
+@using ProjectBlazor.Shared
+@inject NavigationManager Navigation
+
+<h3>Criar Novo Registro</h3>
+
+<!-- Formulário para criar um novo registro -->
+<EditForm Model="@newTodoItem" OnValidSubmit="CreateTodo">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="title">Título:</label>
+        <InputText id="title" @bind-Value="newTodoItem.Title" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Criar</button>
+</EditForm>
+
+@code {
+    private TodoItem newTodoItem = new TodoItem(); // Modelo para o novo registro
+
+    // Método para criar um novo registro
+    private async Task CreateTodo()
+    {
+        var createdTodo = await TodoService.CreateTodo(newTodoItem);
+        if (createdTodo != null)
+        {
+            // Redirecionar para a página de listagem após a criação bem-sucedida
+            NavigationManager.NavigateTo("/read");
+        }
+        else
+        {
+            // Tratar erro, se houver
+        }
+    } 
+}

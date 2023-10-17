@@ -1,0 +1,46 @@
+@page "/read"
+@using ProjectBlazor.Shared
+@using System.Net.Http
+@inject HttpClient HttpClient
+
+<h3>Lista de Registros - <a href="/create">Create</a></h3>
+<br>
+<br>
+
+@if(todos != null)
+{
+<ul>
+    @foreach (var todo in todos)
+    {
+        <div class="form-group">
+        <input type="checkbox" @bind="todo.IsDone" disabled />
+        <input type="text" id="title" @bind="todo.Title"/>
+         <input type="number" id="value" @bind="todo.Value"/>
+         <a href="/update/@todo.Id"> - Editar</a>
+        </div>
+    }
+</ul>
+}else{
+    <h2>Nao tem dados</h2>
+    <button @onclick="LoadTodos">Carregar Tarefas</button>
+}
+
+@code {
+    private List<TodoItem> todos;
+
+    private async Task LoadTodos()
+    {
+        try
+        {
+            todos = await HttpClient.GetFromJsonAsync<List<TodoItem>>("api/todo");
+        }
+        catch (Exception ex)
+        {
+            // Lidar com erros de carregamento
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTodos();
+    }
+}

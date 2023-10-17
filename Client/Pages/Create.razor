@@ -1,0 +1,49 @@
+@page "/create"
+@using ProjectBlazor.Shared 
+@inject HttpClient HttpClient
+@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
+
+<h3>Criar Novo Registro</h3>
+
+<EditForm Model="@newTodoItem" OnValidSubmit="CreateTodo">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="title">Título:</label>
+        <InputText id="title" @bind-Value="newTodoItem.Title" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="title">Value:</label>
+        <InputNumber id="value" @bind-Value="newTodoItem.Value" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Criar</button>
+</EditForm>
+
+@code {
+    private TodoItem newTodoItem = new TodoItem();
+
+    private async Task CreateTodo()
+    {
+        try
+        {
+            var response = await HttpClient.PostAsJsonAsync<TodoItem>("api/todo", newTodoItem);
+            
+            if (response != null)
+            {
+                // Redirecionar para a página de leitura após a criação bem-sucedida
+               Navigation.NavigateTo("/");
+            }
+            else
+            {
+                // Tratar erros, se houver
+            }
+        }
+        catch (Exception ex)
+        {
+            // Lidar com erros de criação
+        }
+    }
+}
