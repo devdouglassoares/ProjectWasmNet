@@ -1,18 +1,45 @@
 ﻿@page "/"
 @layout MainLayout
+@inject IJSRuntime JSRuntime
+@using ProjectBlazor.Shared;
+@inject HttpClient HttpClient
+@attribute [Authorize]
 
 <PageTitle>Index</PageTitle>
 
 
 <h1>Hello, world!</h1>
 
-Welcome to your new app.
-
+Welcome to your new app. - @_userProfileDto?.Name
 <SurveyPrompt Title="How is Blazor working for you?" />
-
-<LoginDisplay></LoginDisplay>
 
 <br>
 <hr>
 <br>
 <Read></Read>
+
+
+
+@* <h3>Lista de Registros</h3>
+
+<p>Perfil do Usuário:</p>
+<ul>
+    <li>@userName</li>
+    <li>@email</li>
+</ul> *@
+
+@code{
+    private UserProfileDto? _userProfileDto;
+
+    protected override async Task OnInitializedAsync()
+    {
+    if(_userProfileDto == null)
+            {
+                var response = await HttpClient.GetAsync("api/Auth/user-profile");
+                if (response.IsSuccessStatusCode)
+                {
+                    _userProfileDto = await response.Content.ReadFromJsonAsync<UserProfileDto>();
+                }
+            }
+    }
+}

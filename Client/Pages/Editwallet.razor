@@ -1,0 +1,66 @@
+@page "/editwallet/{id}"
+@using ProjectBlazor.Shared 
+@using System.Net.Http
+@inject HttpClient HttpClient
+@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
+
+<h3>Atualizar Registro</h3>
+
+<EditForm Model="@walletItem" OnValidSubmit="UpdateWallet">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="title">Título:</label>
+        <InputNumber id="title" @bind-Value="walletItem.Unit" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="title">Value:</label>
+        <InputNumber id="value" @bind-Value="walletItem.Wallet" class="form-control" />
+    </div>
+    <br>
+
+    <button type="submit" class="btn btn-primary">Atualizar</button>
+</EditForm> 
+
+@code {
+    [Parameter]
+    public string id { get; set; }
+
+    private WalletDate walletItem = new WalletDate();
+
+    private async Task UpdateWallet()
+    {
+        try
+        {
+            var response = await HttpClient.PutAsJsonAsync<WalletDate>($"api/wallet/{id}", walletItem);
+
+            if (response != null)
+            {
+                // Redirecionar para a página de leitura após a atualização bem-sucedida
+                Navigation.NavigateTo("/");
+            }
+            else
+            {
+                // Tratar erros, se houver
+            }
+        }
+        catch (Exception ex)
+        {
+            // Lidar com erros de atualização
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            walletItem = await HttpClient.GetFromJsonAsync<WalletDate>($"api/wallet/id/{id}");
+        }
+        catch (Exception ex)
+        {
+            // Lidar com erros de carregamento do registro a ser atualizado
+        }
+    }
+}

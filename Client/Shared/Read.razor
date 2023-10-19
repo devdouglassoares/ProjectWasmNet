@@ -2,31 +2,56 @@
 @using ProjectBlazor.Shared
 @using System.Net.Http
 @inject HttpClient HttpClient
+@inject IJSRuntime JSRuntime
+@attribute [Authorize]
 
 <h3>Lista de Registros - <a href="/create">Create</a></h3>
 <br>
 <br>
 
-@if(todos != null)
+@if (todos != null)
 {
-<ul>
+    <ul>
     @foreach (var todo in todos)
-    {
-        <div class="form-group">
-        <input type="checkbox" @bind="todo.IsDone" disabled />
-        <input type="text" id="title" @bind="todo.Title"/>
-         <input type="number" id="value" @bind="todo.Value"/>
-         <a href="/update/@todo.Id"> - Editar</a>
-        </div>
-    }
-</ul>
-}else{
+        {
+            if (todo.Green == true)
+            {
+                classInput = "green";
+            }
+            else
+            {
+                classInput = "red";
+            }
+            <div class="form-group">
+                <input type="checkbox" @bind="todo.IsDone" disabled />
+                <input class="@classInput" type="text" id="title" @bind="todo.Title" />
+                <input class="@classInput" type="number" id="value" @bind="todo.Value" />
+                <input class="@classInput" type="number" id="unidad" @bind="todo.Unidad" />
+                <input class="@classInput" type="text" id="unidad" @bind="todo.DateInsert" />
+                @* <input type="checkbox" id="unidad" bind="todo.Green" @onchange="e => CheckResult(e, todo.Id)" /> *@
+                <select @onchange="e => CheckResult(e, todo.Id,todo.Value,todo.Unidad)">
+                    <option selected value="">Select</option>
+                    <option value="true">Green</option>
+                    <option value="false">Red</option>
+                </select>
+                @*<a href="/update/@todo.Id"> - Editar</a> *@
+            </div>
+        }
+    </ul>
+}
+else
+{
     <h2>Nao tem dados</h2>
     <button @onclick="LoadTodos">Carregar Tarefas</button>
 }
 
 @code {
-    private List<TodoItem> todos;
+    private List<TodoItem> todos = new List<TodoItem>();
+
+    public string? classInput;
+    private UserProfileDto? _userProfileDto;
+    private WalletDate walletItem = new WalletDate();
+    private decimal result;
 
     private async Task LoadTodos()
     {
@@ -39,8 +64,44 @@
             // Lidar com erros de carregamento
         }
     }
+    private async void CheckResult(ChangeEventArgs e, Guid id, decimal value, decimal unidad)
+    {
+        string comp = e.Value.ToString();
+        if (comp != "")
+        {
+            if (comp == "true")
+            {
+                result = walletItem.Wallet + ((walletItem.Unit * value) * unidad);
+            }
+            else
+            {
+                result = walletItem.Wallet - (walletItem.Unit * unidad);
+            }
+            await HttpClient.PutAsJsonAsync($"api/todo/confirm/{id}", e.Value);
+            await HttpClient.PutAsJsonAsync($"api/wallet/change/{walletItem.Id}", result);
+            await LoadTodos();
+            StateHasChanged();
+        }
+    }
     protected override async Task OnInitializedAsync()
     {
         await LoadTodos();
+        if (_userProfileDto == null)
+        {
+            var response = await HttpClient.GetAsync("api/Auth/user-profile");
+            if (response.IsSuccessStatusCode)
+            {
+                _userProfileDto = await response.Content.ReadFromJsonAsync<UserProfileDto>();
+            }
+        }
+
+        try
+        {
+            walletItem = await HttpClient.GetFromJsonAsync<WalletDate>($"api/wallet/{_userProfileDto.UserId}");
+        }
+        catch (Exception ex)
+        {
+
+        }
     }
 }

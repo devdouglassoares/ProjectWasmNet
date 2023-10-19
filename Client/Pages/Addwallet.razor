@@ -1,0 +1,67 @@
+@page "/addwallet"
+@using ProjectBlazor.Shared 
+@inject HttpClient HttpClient
+@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
+@attribute [Authorize]
+
+<h3>Criar Novo Registro</h3>
+
+@_userProfileDto?.Name
+
+
+<EditForm Model="@newWalletDate" OnValidSubmit="CreateWallet">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="title">Unidade:</label>
+        <InputNumber id="title" @bind-Value="newWalletDate.Unit" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="title">Wallet:</label>
+        <InputNumber id="value" @bind-Value="newWalletDate.Wallet" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Criar</button>
+</EditForm>
+
+@code {
+     private UserProfileDto? _userProfileDto;
+
+    protected override async Task OnInitializedAsync()
+    {
+    if(_userProfileDto == null)
+            {
+                var response = await HttpClient.GetAsync("api/Auth/user-profile");
+                if (response.IsSuccessStatusCode)
+                {
+                    _userProfileDto = await response.Content.ReadFromJsonAsync<UserProfileDto>();
+                }
+            }
+    }
+    private WalletDate newWalletDate = new WalletDate();
+
+    private async Task CreateWallet()
+    {
+        try
+        {
+            newWalletDate.UserId = _userProfileDto?.UserId;
+            var response = await HttpClient.PostAsJsonAsync<WalletDate>("api/wallet", newWalletDate);
+            
+            if (response != null)
+            {
+                // Redirecionar para a página de leitura após a criação bem-sucedida
+               Navigation.NavigateTo("/");
+            }
+            else
+            {
+                // Tratar erros, se houver
+            }
+        }
+        catch (Exception ex)
+        {
+            // Lidar com erros de criação
+        }
+    }
+}

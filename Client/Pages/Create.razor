@@ -3,6 +3,7 @@
 @inject HttpClient HttpClient
 @inject IJSRuntime JSRuntime
 @inject NavigationManager Navigation
+@attribute [Authorize]
 
 <h3>Criar Novo Registro</h3>
 
@@ -18,6 +19,10 @@
         <label for="title">Value:</label>
         <InputNumber id="value" @bind-Value="newTodoItem.Value" class="form-control" />
     </div>
+    <div class="form-group">
+        <label for="title">Unidad:</label>
+        <InputNumber id="unidad" @bind-Value="newTodoItem.Unidad" class="form-control" />
+    </div>
 
     <button type="submit" class="btn btn-primary">Criar</button>
 </EditForm>
@@ -29,6 +34,7 @@
     {
         try
         {
+            newTodoItem.DateInsert = DateTime.Now.ToUniversalTime();
             var response = await HttpClient.PostAsJsonAsync<TodoItem>("api/todo", newTodoItem);
             
             if (response != null)

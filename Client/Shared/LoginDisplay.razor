@@ -2,10 +2,20 @@
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @inject NavigationManager Navigation
 @layout MainLayout
+@using ProjectBlazor.Shared;
+@inject HttpClient HttpClient
 
 <AuthorizeView>
     <Authorized>
-        <a href="Identity/Account/Manage">Hello, @context.User.Identity?.Name!</a>
+        <a href="Identity/Account/Manage">Hello, @context.User.Identity?.Name! - @walletItem.Wallet</a>
+        <br>
+        @if(@walletItem?.Wallet == 0)
+        {
+         <a href="/addwallet">Add Wallet</a>
+        }else
+        {
+         <a href="/editwallet/{@walletItem?.Id}">Edit Wallet</a>
+        }
         <NavLink class="nav-link" href="/identity/account/logout" Match="NavLinkMatch.All">
             <span class="oi oi-power-standby" aria-hidden="true"></span> Logout
         </NavLink>
@@ -16,6 +26,29 @@
     </NotAuthorized>
 </AuthorizeView>
 
-@code{
-    
+@code {
+    private UserProfileDto? _userProfileDto;
+    private WalletDate walletItem = new WalletDate();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (_userProfileDto == null)
+        {
+            var response = await HttpClient.GetAsync("api/Auth/user-profile");
+            if (response.IsSuccessStatusCode)
+            {
+                _userProfileDto = await response.Content.ReadFromJsonAsync<UserProfileDto>();
+            }
+        }
+
+        try
+        {
+            walletItem = await HttpClient.GetFromJsonAsync<WalletDate>($"api/wallet/{_userProfileDto.UserId}");
+        }
+        catch (Exception ex)
+        {
+
+        }
+    }
+
 }
