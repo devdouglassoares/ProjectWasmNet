@@ -21,7 +21,15 @@ public class TodoController : ControllerBase
     [HttpGet]
     public async Task<IEnumerable<TodoItem>> GetTodoItems()
     {
-        return await _context.TodoItems.OrderByDescending(item => item.DateInsert).ToListAsync();
+        return await _context.TodoItems.ToListAsync();
+    }
+
+    [HttpGet("all/{id}")]
+    public async Task<IEnumerable<TodoItem>> GetTodoItemsFilter(string id)
+    {
+        var query =  _context.TodoItems.FromSqlRaw("SELECT * FROM \"TodoItems\" WHERE \"UserId\" = {0}", id);
+
+        return await query.OrderByDescending(item => item.DateInsert).ToListAsync();
     }
     
     [HttpGet("{id}")]

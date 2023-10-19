@@ -243,6 +243,9 @@ namespace ProjectBlazor.Server.Migrations
                     b.Property<decimal>("Unidad")
                         .HasColumnType("numeric");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
                     b.Property<decimal>("Value")
                         .HasColumnType("numeric");
 

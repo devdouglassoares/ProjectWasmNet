@@ -61,7 +61,8 @@ namespace ProjectBlazor.Server.Migrations
                     Unidad = table.Column<decimal>(type: "numeric", nullable: false),
                     Green = table.Column<bool>(type: "boolean", nullable: false),
                     IsDone = table.Column<bool>(type: "boolean", nullable: false),
-                    DateInsert = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    DateInsert = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {

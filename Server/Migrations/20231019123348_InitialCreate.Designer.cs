@@ -12,7 +12,7 @@ using ProjectBlazor.Server.Data;
 namespace ProjectBlazor.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231019065012_InitialCreate")]
+    [Migration("20231019123348_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -245,6 +245,9 @@ namespace ProjectBlazor.Server.Migrations
 
                     b.Property<decimal>("Unidad")
                         .HasColumnType("numeric");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
 
                     b.Property<decimal>("Value")
                         .HasColumnType("numeric");
