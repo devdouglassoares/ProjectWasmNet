@@ -12,5 +12,6 @@ namespace ProjectBlazor.Shared
         public bool Green {get; set;}
         public bool IsDone { get; set; }
         public DateTime DateInsert {get; set;}
+        public string? UserId { get; set; }
     }
 }

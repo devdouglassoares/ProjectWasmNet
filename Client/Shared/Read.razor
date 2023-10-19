@@ -57,7 +57,7 @@ else
     {
         try
         {
-            todos = await HttpClient.GetFromJsonAsync<List<TodoItem>>("api/todo");
+            todos = await HttpClient.GetFromJsonAsync<List<TodoItem>>($"api/todo/all/{_userProfileDto.UserId}");
         }
         catch (Exception ex)
         {
@@ -85,13 +85,13 @@ else
     }
     protected override async Task OnInitializedAsync()
     {
-        await LoadTodos();
         if (_userProfileDto == null)
         {
             var response = await HttpClient.GetAsync("api/Auth/user-profile");
             if (response.IsSuccessStatusCode)
             {
                 _userProfileDto = await response.Content.ReadFromJsonAsync<UserProfileDto>();
+                await LoadTodos();
             }
         }
 
