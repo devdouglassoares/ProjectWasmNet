@@ -6,8 +6,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace ProjectBlazor.Server.Migrations
 {
+    /// <inheritdoc />
     public partial class InitialCreate : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -47,6 +49,37 @@ namespace ProjectBlazor.Server.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TodoItems",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: true),
+                    Value = table.Column<decimal>(type: "numeric", nullable: false),
+                    Unidad = table.Column<decimal>(type: "numeric", nullable: false),
+                    Green = table.Column<bool>(type: "boolean", nullable: false),
+                    IsDone = table.Column<bool>(type: "boolean", nullable: false),
+                    DateInsert = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TodoItems", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WalletItems",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: true),
+                    Unit = table.Column<decimal>(type: "numeric", nullable: false),
+                    Wallet = table.Column<decimal>(type: "numeric", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WalletItems", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -193,6 +226,7 @@ namespace ProjectBlazor.Server.Migrations
                 unique: true);
         }
 
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
@@ -209,6 +243,12 @@ namespace ProjectBlazor.Server.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "TodoItems");
+
+            migrationBuilder.DropTable(
+                name: "WalletItems");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

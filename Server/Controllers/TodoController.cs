@@ -21,7 +21,7 @@ public class TodoController : ControllerBase
     [HttpGet]
     public async Task<IEnumerable<TodoItem>> GetTodoItems()
     {
-        return await _context.TodoItems.ToListAsync();
+        return await _context.TodoItems.OrderByDescending(item => item.DateInsert).ToListAsync();
     }
     
     [HttpGet("{id}")]
@@ -44,6 +44,17 @@ public class TodoController : ControllerBase
         await _context.SaveChangesAsync();
 
         return CreatedAtAction(nameof(GetTodoItems), new { id = todoItem.Id }, todoItem);
+    }
+
+    [HttpPut("confirm/{id}")]
+    public IActionResult UpdateState(Guid Id, [FromBody] string isCompleted)
+    {
+
+        var sql = "UPDATE \"TodoItems\" SET \"Green\" = {1} WHERE \"Id\" = {0}";
+        _context.Database.ExecuteSqlRaw(sql, Id, bool.Parse(isCompleted));
+
+        // Lógica de tratamento de erro e resposta apropriada, se necessário
+        return Ok(); // Retorna um status HTTP 200 OK, por exemplo
     }
 
     [HttpPut("{id}")]

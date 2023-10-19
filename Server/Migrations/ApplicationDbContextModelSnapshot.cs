@@ -17,7 +17,7 @@ namespace ProjectBlazor.Server.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.22")
+                .HasAnnotation("ProductVersion", "7.0.12")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -228,18 +228,47 @@ namespace ProjectBlazor.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("DateInsert")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Green")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsDone")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Title")
                         .HasColumnType("text");
 
-                    b.Property<int>("Value")
-                        .HasColumnType("integer");
+                    b.Property<decimal>("Unidad")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("Value")
+                        .HasColumnType("numeric");
 
                     b.HasKey("Id");
 
                     b.ToTable("TodoItems");
+                });
+
+            modelBuilder.Entity("ProjectBlazor.Shared.WalletDate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Unit")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Wallet")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WalletItems");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

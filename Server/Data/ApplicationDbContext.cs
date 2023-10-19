@@ -9,5 +9,6 @@ namespace ProjectBlazor.Server.Data
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
         public DbSet<TodoItem> TodoItems { get; set; } 
+        public DbSet<WalletDate> WalletItems { get; set; } 
     }
 }
