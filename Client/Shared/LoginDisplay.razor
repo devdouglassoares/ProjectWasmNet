@@ -7,14 +7,20 @@
 
 <AuthorizeView>
     <Authorized>
-        <a href="Identity/Account/Manage">Hello, @context.User.Identity?.Name! - @walletItem.Wallet</a>
-        <br>
+        <a href="Identity/Account/Manage"><span class="oi oi-home" aria-hidden="true"></span> - Hello, @context.User.Identity?.Name!</a>
+        <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">
+            <span class="oi oi-browser" aria-hidden="true"></span> @walletItem.Wallet
+        </NavLink>
         @if(@walletItem?.Wallet == 0)
         {
-         <a href="/addwallet">Add Wallet</a>
+         <NavLink class="nav-link" href="/addwallet" Match="NavLinkMatch.All">
+            <span class="oi oi-box" aria-hidden="true"></span> Add Wallet
+        </NavLink>
         }else
         {
-         <a href="/editwallet/{@walletItem?.Id}">Edit Wallet</a>
+         <NavLink class="nav-link" href="/editwallet/{@walletItem?.Id}" Match="NavLinkMatch.All">
+            <span class="oi oi-box" aria-hidden="true"></span> Edit Wallet
+        </NavLink>
         }
         <NavLink class="nav-link" href="/identity/account/logout" Match="NavLinkMatch.All">
             <span class="oi oi-power-standby" aria-hidden="true"></span> Logout

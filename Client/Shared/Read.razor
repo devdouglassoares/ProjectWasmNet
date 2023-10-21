@@ -24,16 +24,18 @@
             }
             <div class="form-group">
                 <input type="checkbox" @bind="todo.IsDone" disabled />
-                <input class="@classInput" type="text" id="title" @bind="todo.Title" />
-                <input class="@classInput" type="number" id="value" @bind="todo.Value" />
-                <input class="@classInput" type="number" id="unidad" @bind="todo.Unidad" />
-                <input class="@classInput" type="text" id="unidad" @bind="todo.DateInsert" />
-                @* <input type="checkbox" id="unidad" bind="todo.Green" @onchange="e => CheckResult(e, todo.Id)" /> *@
+                <input class="@classInput" type="text" id="title" @bind="todo.Title" disabled />
+                <input class="@classInput" type="number" id="value" @bind="todo.Value" disabled />
+                <input class="@classInput" type="number" id="unidad" @bind="todo.Unidad" disabled />
+                <input class="@classInput" type="text" id="unidad" @bind="todo.DateInsert" disabled />
+                @if (!todo.IsDone)
+                {
                 <select @onchange="e => CheckResult(e, todo.Id,todo.Value,todo.Unidad)">
                     <option selected value="">Select</option>
                     <option value="true">Green</option>
                     <option value="false">Red</option>
                 </select>
+                }
                 @*<a href="/update/@todo.Id"> - Editar</a> *@
             </div>
         }
