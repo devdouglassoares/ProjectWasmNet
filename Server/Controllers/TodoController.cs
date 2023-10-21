@@ -61,6 +61,9 @@ public class TodoController : ControllerBase
         var sql = "UPDATE \"TodoItems\" SET \"Green\" = {1} WHERE \"Id\" = {0}";
         _context.Database.ExecuteSqlRaw(sql, Id, bool.Parse(isCompleted));
 
+        var sqlDone = "UPDATE \"TodoItems\" SET \"IsDone\" = true WHERE \"Id\" = {0}";
+        _context.Database.ExecuteSqlRaw(sqlDone, Id);
+
         // Lógica de tratamento de erro e resposta apropriada, se necessário
         return Ok(); // Retorna um status HTTP 200 OK, por exemplo
     }
