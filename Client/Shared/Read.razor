@@ -7,7 +7,44 @@
 
 <h3>Lista de Registros - <a href="/create/@_userProfileDto?.UserId">Create</a></h3>
 <br>
-<br>
+@if (contagemUnidades != null && contagemUnidadesFalse != null && contagemUnidadesTrue != null)
+{
+    <table class="table">
+    <thead>
+        <tr>
+            <th>Data</th>
+            <th>Total de Unidades</th>
+            <th>Green Red</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in contagemUnidades)
+            {
+                <tr>
+                    <td>@item.Key.ToString("yyyy-MM-dd")</td>
+                    <td>@item.Value</td>
+                    <td>Total</td>
+                </tr>
+            }
+            @foreach (var item in contagemUnidadesFalse)
+            {
+                <tr>
+                    <td>@item.Key.ToString("yyyy-MM-dd")</td>
+                    <td>@item.Value</td>
+                    <td>Red</td>
+                </tr>
+            }
+            @foreach (var item in contagemUnidadesTrue)
+            {
+                <tr>
+                    <td>@item.Key.ToString("yyyy-MM-dd")</td>
+                    <td>@item.Value</td>
+                    <td>Green</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 
 @if (todos != null)
 {
@@ -30,14 +67,14 @@
                 <input class="@classInput" type="text" id="unidad" @bind="todo.DateInsert" disabled />
                 @if (!todo.IsDone)
                 {
-                <select @onchange="e => CheckResult(e, todo.Id,todo.Value,todo.Unidad)">
-                    <option selected value="">Select</option>
-                    <option value="true">Green</option>
-                    <option value="false">Red</option>
-                </select>
+                    <select @onchange="e => CheckResult(e, todo.Id,todo.Value,todo.Unidad)">
+                        <option selected value="">Select</option>
+                        <option value="true">Green</option>
+                        <option value="false">Red</option>
+                    </select>
                 }
                 @*<a href="/update/@todo.Id"> - Editar</a> *@
-            </div>
+    </div>
         }
     </ul>
 }
@@ -54,6 +91,11 @@ else
     private UserProfileDto? _userProfileDto;
     private WalletDate walletItem = new WalletDate();
     private decimal result;
+    bool considerarGreen = false; // Defina como 'false' se não quiser considerar 'Green'
+
+    public Dictionary<DateTime, decimal> contagemUnidades;
+    public Dictionary<DateTime, decimal> contagemUnidadesTrue;
+    public Dictionary<DateTime, decimal> contagemUnidadesFalse;
 
     private async Task LoadTodos()
     {
@@ -94,6 +136,9 @@ else
             {
                 _userProfileDto = await response.Content.ReadFromJsonAsync<UserProfileDto>();
                 await LoadTodos();
+                await CalcularContagemUnidadesPorDia(null);
+                await CalcularContagemUnidadesPorDia(true);
+                await CalcularContagemUnidadesPorDia(false);
             }
         }
 
@@ -105,5 +150,70 @@ else
         {
 
         }
+    }
+    // Função para calcular a contagem de unidades por dia com base em 'Green'
+    public async Task CalcularContagemUnidadesPorDia(bool? considerarGreen)
+    {
+
+        var itensFiltrados = todos;
+
+        if (considerarGreen.HasValue)
+        {
+            itensFiltrados = itensFiltrados.Where(item => item.Green == considerarGreen.Value).ToList();
+            if (considerarGreen.Value == true)
+            {
+                contagemUnidadesTrue = new Dictionary<DateTime, decimal>();
+                foreach (var todo in itensFiltrados)
+                {
+                    var dataDia = todo.DateInsert.Date;
+
+                    if (contagemUnidadesTrue.ContainsKey(dataDia))
+                    {
+                        contagemUnidadesTrue[dataDia] += todo.Unidad;
+                    }
+                    else
+                    {
+                        contagemUnidadesTrue[dataDia] = todo.Unidad;
+                    }
+                }
+
+            }
+            else
+            {
+                contagemUnidadesFalse = new Dictionary<DateTime, decimal>();
+                foreach (var todo in itensFiltrados)
+                {
+                    var dataDia = todo.DateInsert.Date;
+
+                    if (contagemUnidadesFalse.ContainsKey(dataDia))
+                    {
+                        contagemUnidadesFalse[dataDia] += todo.Unidad;
+                    }
+                    else
+                    {
+                        contagemUnidadesFalse[dataDia] = todo.Unidad;
+                    }
+                }
+
+            }
+        }
+        else
+        {
+            contagemUnidades = new Dictionary<DateTime, decimal>();
+            foreach (var todo in itensFiltrados)
+            {
+                var dataDia = todo.DateInsert.Date;
+
+                if (contagemUnidades.ContainsKey(dataDia))
+                {
+                    contagemUnidades[dataDia] += todo.Unidad;
+                }
+                else
+                {
+                    contagemUnidades[dataDia] = todo.Unidad;
+                }
+            }
+        }
+
     }
 }
