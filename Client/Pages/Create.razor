@@ -1,4 +1,4 @@
-@page "/create"
+@page "/create/{id}"
 @using ProjectBlazor.Shared 
 @inject HttpClient HttpClient
 @inject IJSRuntime JSRuntime
@@ -28,6 +28,8 @@
 </EditForm>
 
 @code {
+    [Parameter]
+    public string? id { get; set; }
     private TodoItem newTodoItem = new TodoItem();
 
     private async Task CreateTodo()
@@ -35,6 +37,7 @@
         try
         {
             newTodoItem.DateInsert = DateTime.Now.ToUniversalTime();
+            newTodoItem.UserId = id;
             var response = await HttpClient.PostAsJsonAsync<TodoItem>("api/todo", newTodoItem);
             
             if (response != null)
