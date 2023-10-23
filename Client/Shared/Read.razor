@@ -4,79 +4,105 @@
 @inject HttpClient HttpClient
 @inject IJSRuntime JSRuntime
 @attribute [Authorize]
+@using MatBlazor
 
-<h3>Lista de Registros - <a href="/create/@_userProfileDto?.UserId">Create</a></h3>
+<h3>Lista de Registros - <a href="/create/@_userProfileDto?.UserId"><button class="btn btn-primary">Create</button></a></h3>
+<button class="btn btn-primary" @onclick="ChangeView">
+    @if (viewfiltered)
+    {
+        <span>Ocultar Itens</span>
+    }
+    else
+    {
+        <span>Mostrar Todos</span>
+    }
+</button>
+<br>
 <br>
 @if (contagemUnidades != null && contagemUnidadesFalse != null && contagemUnidadesTrue != null)
 {
-    <table class="table">
-    <thead>
-        <tr>
-            <th>Data</th>
+     <MatTabGroup>
+            <MatTab Label="Total">
+               <MatTable Items="@contagemUnidades" class="mat-elevation-z5 table table-bordered table-striped table-hover">
+    <MatTableHeader>
+        <th>Data</th>
             <th>Total de Unidades</th>
-            <th>Green Red</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in contagemUnidades)
-            {
-                <tr>
-                    <td>@item.Key.ToString("yyyy-MM-dd")</td>
-                    <td>@item.Value</td>
-                    <td>Total</td>
-                </tr>
-            }
-            @foreach (var item in contagemUnidadesFalse)
-            {
-                <tr>
-                    <td>@item.Key.ToString("yyyy-MM-dd")</td>
-                    <td>@item.Value</td>
-                    <td>Red</td>
-                </tr>
-            }
-            @foreach (var item in contagemUnidadesTrue)
-            {
-                <tr>
-                    <td>@item.Key.ToString("yyyy-MM-dd")</td>
-                    <td>@item.Value</td>
-                    <td>Green</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    </MatTableHeader>
+        <MatTableRow>
+                    <td>@context.Key.ToString("yyyy-MM-dd")</td>
+                    <td>@context.Value</td>
+        </MatTableRow>
+    </MatTable>
+            </MatTab>
+            <MatTab Label="Red's">
+               <MatTable Items="@contagemUnidadesFalse" class="mat-elevation-z5 table table-bordered table-striped table-hover">
+    <MatTableHeader>
+        <th>Data</th>
+            <th>Total de Unidades</th>
+    </MatTableHeader>
+        <MatTableRow>
+                    <td>@context.Key.ToString("yyyy-MM-dd")</td>
+                    <td>@context.Value</td>
+        </MatTableRow>
+    </MatTable>
+            </MatTab>
+            <MatTab Label="Green's">
+               <MatTable Items="@contagemUnidadesTrue" class="mat-elevation-z5 table table-bordered table-striped table-hover">
+    <MatTableHeader>
+        <th>Data</th>
+            <th>Total de Unidades</th>
+    </MatTableHeader>
+        <MatTableRow>
+                    <td>@context.Key.ToString("yyyy-MM-dd")</td>
+                    <td>@context.Value</td>
+        </MatTableRow>
+    </MatTable>
+            </MatTab>
+            
+     </MatTabGroup>
 }
+<br>
+
 
 @if (todos != null)
 {
-    <ul>
-    @foreach (var todo in todos)
-        {
-            if (todo.Green == true)
-            {
-                classInput = "green";
-            }
-            else
-            {
-                classInput = "red";
-            }
-            <div class="form-group">
-                <input type="checkbox" @bind="todo.IsDone" disabled />
-                <input class="@classInput" type="text" id="title" @bind="todo.Title" disabled />
-                <input class="@classInput" type="number" id="value" @bind="todo.Value" disabled />
-                <input class="@classInput" type="number" id="unidad" @bind="todo.Unidad" disabled />
-                <input class="@classInput" type="text" id="unidad" @bind="todo.DateInsert" disabled />
-                @if (!todo.IsDone)
+    <div>
+     <MatTable Items="@todosFiltered" class="mat-elevation-z5 table table-bordered table-striped table-hover">
+    <MatTableHeader>
+        <th>Check</th>
+            <th>Desc</th>
+            <th>Odd (x)</th>
+            <th>Unidade</th>
+            <th>Data</th>
+            <th>Green / Red</th>
+    </MatTableHeader>
+    <MatTableRow>
+        @if (context.Green == true)
                 {
-                    <select @onchange="e => CheckResult(e, todo.Id,todo.Value,todo.Unidad)">
-                        <option selected value="">Select</option>
-                        <option value="true">Green</option>
-                        <option value="false">Red</option>
-                    </select>
+                    classInput = "green";
                 }
-                @*<a href="/update/@todo.Id"> - Editar</a> *@
-    </div>
-        }
-    </ul>
+                else
+                {
+                    classInput = "red";
+                }
+                    <td><input type="checkbox" @bind="context.IsDone" disabled /></td>
+                    <td><input class="@classInput" type="text" id="title" @bind="context.Title" disabled /></td>
+                    <td><input class="@classInput" type="number" id="value" @bind="context.Value" disabled /></td>
+                    <td><input class="@classInput" type="number" id="unidad" @bind="context.Unidad" disabled /></td>
+                    <td><input class="@classInput" type="text" id="unidad" @bind="context.DateInsert" disabled /></td>
+                    @if (!context.IsDone)
+                    {
+                        <td>
+                        <select  class="form-select" @onchange="e => CheckResult(e, context.Id,context.Value,context.Unidad)">
+                            <option selected value="">Select</option>
+                            <option value="true">Green</option>
+                            <option value="false">Red</option>
+                        </select>
+                        </td>
+                    }
+    </MatTableRow>
+</MatTable>
+</div>
 }
 else
 {
@@ -86,6 +112,7 @@ else
 
 @code {
     private List<TodoItem> todos = new List<TodoItem>();
+    private List<TodoItem> todosFiltered = new List<TodoItem>();
 
     public string? classInput;
     private UserProfileDto? _userProfileDto;
@@ -96,12 +123,35 @@ else
     public Dictionary<DateTime, decimal> contagemUnidades;
     public Dictionary<DateTime, decimal> contagemUnidadesTrue;
     public Dictionary<DateTime, decimal> contagemUnidadesFalse;
+    public bool viewfiltered = true;
 
+
+    public void ChangeView()
+    {
+        viewfiltered = !viewfiltered;
+
+        if (viewfiltered)
+        {
+            todosFiltered = todos;
+            CalcularContagemUnidadesPorDia(null);
+            CalcularContagemUnidadesPorDia(true);
+            CalcularContagemUnidadesPorDia(false);
+        }
+        else
+        {
+            todosFiltered = todos.Where(item => !item.IsDone).ToList();
+            CalcularContagemUnidadesPorDia(null);
+            CalcularContagemUnidadesPorDia(true);
+            CalcularContagemUnidadesPorDia(false);
+        }
+    }
     private async Task LoadTodos()
     {
         try
         {
             todos = await HttpClient.GetFromJsonAsync<List<TodoItem>>($"api/todo/all/{_userProfileDto.UserId}");
+            ChangeView();
+            //todos = todos.Where(item => !item.IsDone).ToList();
         }
         catch (Exception ex)
         {
@@ -155,7 +205,7 @@ else
     public async Task CalcularContagemUnidadesPorDia(bool? considerarGreen)
     {
 
-        var itensFiltrados = todos;
+        var itensFiltrados = todosFiltered;
 
         if (considerarGreen.HasValue)
         {

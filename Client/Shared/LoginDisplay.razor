@@ -9,7 +9,7 @@
     <Authorized>
         <a class="nav-link" href="Identity/Account/Manage"><span class="oi oi-home" aria-hidden="true"></span> Hello, @context.User.Identity?.Name!</a>
         <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">
-            <span class="oi oi-browser" aria-hidden="true"></span> @walletItem.Wallet
+            <span class="oi oi-browser" aria-hidden="true"></span>  @walletItem.Wallet
         </NavLink>
         @if(@walletItem?.Wallet == 0)
         {

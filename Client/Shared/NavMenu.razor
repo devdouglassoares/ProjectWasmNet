@@ -1,5 +1,4 @@
 ﻿@attribute [Authorize]
-@layout MainLayout
 @inject IJSRuntime JSRuntime
 @using ProjectBlazor.Shared;
 @inject HttpClient HttpClient
@@ -11,7 +10,6 @@
         </button>
     </div>
 </div>
-
 <LoginDisplay></LoginDisplay>
 
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
